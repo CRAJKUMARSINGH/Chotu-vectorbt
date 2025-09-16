@@ -1,0 +1,20 @@
+PLEASE REFER @
+
+https://github.com/polakowo/vectorbt
+
+FOR UNDERSTANDING HOW TO USE APP >>>>
+
+AND RUN and test each component of the app
+
+THE PROGRAM AND MAKE ONE CLICK USABLE >>>>
+TEST THOROPUGHLY ON WEB PROGRAMMATICALLY >>>>
+OPTIMISE REGARDING MEMORY AND CACHE >>>
+AND MAKE IT STREAMLIT/ VERCEL DEPLOYABLE (WHICHEVER IS APPLICABLE)
+REMOVE REDUNDANT FILES
+############################
+git config --global user.email "crajkumarsingh@hotmail.com"
+git config --global user.name "RAJKUMAR SINGH CHAUHAN"
+
+UPDATE GIT REPO
+
+ADD HOW TO RUN README_RAJKUMAR.MD FILE >>>>UPDATE TO GIT

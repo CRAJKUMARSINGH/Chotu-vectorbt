@@ -1,0 +1,29 @@
+,agg_func_mean
+Start,2025-03-02 00:00:00+00:00
+End,2025-09-02 00:00:00+00:00
+Period,185 days 00:00:00
+Start Value,10000.0
+End Value,14997.962034094664
+Total Return [%],49.979620340946646
+Benchmark Return [%],45.31432539852141
+Max Gross Exposure [%],100.0
+Total Fees Paid,0.0
+Max Drawdown [%],14.830330409620796
+Max Drawdown Duration,28 days 12:00:00
+Total Trades,1.5
+Total Closed Trades,1.0
+Total Open Trades,0.5
+Open Trade PnL,3482.752154796335
+Win Rate [%],100.0
+Best Trade [%],15.152098792983297
+Worst Trade [%],15.152098792983297
+Avg Winning Trade [%],15.152098792983297
+Avg Losing Trade [%],
+Avg Winning Trade Duration,52 days 12:00:00
+Avg Losing Trade Duration,
+Profit Factor,inf
+Expectancy,1515.2098792983297
+Sharpe Ratio,1.7549490775443677
+Calmar Ratio,7.260179681283979
+Omega Ratio,1.4944641231890519
+Sortino Ratio,3.3656559381564493

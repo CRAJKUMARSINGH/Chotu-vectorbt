@@ -10,8 +10,7 @@ st.set_page_config(page_title="VectorBT SMA Crossover", layout="wide")
 
 @st.cache_data(show_spinner=False)
 def load_price(symbols: list[str], period: str, interval: str) -> pd.DataFrame:
-
-
+    """Download and cache only the Close price frame."""
     data = vbt.YFData.download(
         symbols,
         period=period,
@@ -24,12 +23,35 @@ def load_price(symbols: list[str], period: str, interval: str) -> pd.DataFrame:
 
 
 def run_strategy(price: pd.DataFrame, fast: int, slow: int) -> vbt.Portfolio:
+    """Build portfolio object for given parameters (not cached to avoid heavy object caching)."""
     fast_ma = vbt.MA.run(price, window=fast)
     slow_ma = vbt.MA.run(price, window=slow)
     entries = fast_ma.ma_crossed_above(slow_ma)
     exits = fast_ma.ma_crossed_below(slow_ma)
     pf = vbt.Portfolio.from_signals(price, entries, exits, init_cash=10000.0)
     return pf
+
+
+@st.cache_data(show_spinner=False)
+def compute_outputs(symbols_key: str, period: str, interval: str, fast: int, slow: int):
+    """Cache only lightweight/serializable outputs keyed by parameters.
+
+    symbols_key should be a stable string (e.g., 'BTC-USD,ETH-USD').
+    Returns: dict(stats), total_return DataFrame, equity curve Series, trades head DataFrame
+    """
+    symbols = [s.strip() for s in symbols_key.split(",") if s.strip()]
+    price = load_price(symbols, period, interval)
+    pf = run_strategy(price, fast, slow)
+    stats_df = pf.stats()
+    total_return_df = pf.total_return().to_frame()
+    equity_curve = pf.value()
+    trades_head = pf.trades.records.head(200)
+    return (
+        stats_df.to_dict(),
+        total_return_df,
+        equity_curve,
+        trades_head,
+    )
 
 
 def main() -> None:
@@ -49,25 +71,31 @@ def main() -> None:
 
         st.header("Run")
         run_btn = st.button("Run Backtest", use_container_width=True)
+        if st.button("Clear cache"):
+            st.cache_data.clear()
 
     if run_btn:
-        with st.status("Downloading data and running backtest...", expanded=False):
-            price = load_price(symbols, period, interval)
-            pf = run_strategy(price, fast, slow)
+        with st.status("Running backtest...", expanded=False):
+            stats_dict, total_return_df, equity_curve, trades_head = compute_outputs(
+                ", ".join(symbols), period, interval, fast, slow
+            )
 
         st.subheader("Cumulative Return")
-        st.plotly_chart(pf.total_return().vbt.heatmap(slider_level="symbol").figure, use_container_width=True)
+        try:
+            fig_heat = total_return_df.vbt.heatmap(slider_level="symbol").figure
+            st.plotly_chart(fig_heat, use_container_width=True)
+        except Exception:
+            st.line_chart(total_return_df)
 
         st.subheader("Portfolio Stats")
-        stats = pf.stats()
-        st.dataframe(stats.rename("Value"))
+        stats_df = pd.Series(stats_dict).to_frame(name="Value") if isinstance(stats_dict, dict) else pd.DataFrame(stats_dict)
+        st.dataframe(stats_df)
 
         st.subheader("Equity Curve")
-        fig = pf.plot()
-        st.plotly_chart(fig, use_container_width=True)
+        st.line_chart(equity_curve)
 
-        st.subheader("Trades Overview")
-        st.dataframe(pf.trades.records)
+        st.subheader("Trades Overview (first 200)")
+        st.dataframe(trades_head)
 
     st.caption("Powered by vectorbt. See repo: https://github.com/polakowo/vectorbt")
 
